@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lukula Family Portal</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Custom Date Picker Styles -->
+    <style>
+        input[type="date"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background: var(--white);
+            border: 2px solid var(--gray-lighter);
+            border-radius: var(--border-radius-sm);
+            padding: 12px 16px;
+            font-size: 14px;
+            color: var(--dark-color);
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: var(--transition);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 40px;
+        }
+        
+        input[type="date"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        /* Custom file upload */
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-upload input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border: 2px dashed var(--gray-lighter);
+            border-radius: var(--border-radius-sm);
+            background: var(--background);
+            color: var(--gray-color);
+            font-size: 14px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .file-upload-label:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .file-upload-label i {
+            font-size: 18px;
+        }
+        
+        .preview-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="login-page" class="login-container">
+        <div class="login-wrapper">
+            <div class="login-brand">   
+                <div class="brand-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <h1> Family Portal</h1>
+                <p>Your family information & savings hub</p>
+            </div>
+            <form id="login-form" class="login-form">
+                <div class="form-group">
+                    <label for="username">
+                        <i class="fas fa-user"></i> Username
+                    </label>
+                    <input type="text" id="username" name="username" required placeholder="Enter your username">
+                </div>
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" name="password" required placeholder="Enter your password">
+                        <button type="button" class="toggle-password" onclick="togglePassword()">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+                <div class="login-footer">
+                    <p>Don't have an account? <a href="#" onclick="showRegister()">Register</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Page -->
+    <div id="register-page" class="login-container" style="display: none;">
+        <div class="login-wrapper">
+            <div class="login-brand">
+                <div class="brand-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h1>Join the Family</h1>
+                <p>Create your account</p>
+            </div>
+            <form id="register-form" class="login-form">
+                <div class="form-group">
+                    <label for="reg-username">
+                        <i class="fas fa-user"></i> Username
+                    </label>
+                    <input type="text" id="reg-username" name="username" required placeholder="Choose a username">
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <input type="password" id="reg-password" name="password" required placeholder="Choose a password">
+                </div>
+                <div class="form-group">
+                    <label for="reg-fullname">
+                        <i class="fas fa-id-card"></i> Full Name
+                    </label>
+                    <input type="text" id="reg-fullname" name="fullname" required placeholder="Your full name">
+                </div>
+                <div class="form-group">
+                    <label for="reg-email">
+                        <i class="fas fa-envelope"></i> Email
+                    </label>
+                    <input type="email" id="reg-email" name="email" required placeholder="Your email address">
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+                <div class="login-footer">
+                    <p>Already have an account? <a href="#" onclick="showLogin()">Sign In</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="app-container" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-info">
+                    <h3 id="current-user-name">Welcome</h3>
+                    <span id="current-user-role" class="role-badge">User</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-page="savings">
+                    <i class="fas fa-piggy-bank"></i>
+                    <span>Savings</span>
+                </a>
+                <a href="#" class="nav-item" data-page="family">
+                    <i class="fas fa-users"></i>
+                    <span>Family Info</span>
+                </a>
+                <a href="#" class="nav-item" data-page="debits">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Debits/Withdrawals</span>
+                </a>
+                <a href="#" class="nav-item" data-page="profile">
+                    <i class="fas fa-user"></i>
+                    <span>My Profile</span>
+                </a>
+                <a href="#" class="nav-item" data-page="admin" id="admin-nav" style="display: none;">
+                    <i class="fas fa-cogs"></i>
+                    <span>Admin Panel</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button onclick="logout()" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboard-page" class="page active">
+                <div class="page-header">
+                    <h1><i class="fas fa-chart-line"></i> Dashboard</h1>
+                    <div class="header-actions">
+                        <span class="date-display" id="current-date"></span>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Total Members</h3>
+                            <p class="stat-value" id="total-members">7</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Total Savings</h3>
+                            <p class="stat-value" id="total-savings">UGX 0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>This Month</h3>
+                            <p class="stat-value" id="monthly-savings">UGX 0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Goal Progress</h3>
+                            <p class="stat-value" id="goal-progress">0%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3><i class="fas fa-chart-pie"></i> Savings Distribution</h3>
+                        <canvas id="savingsChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3><i class="fas fa-chart-bar"></i> Monthly Progress</h3>
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                    <div class="chart-card chart-card-full">
+                        <h3><i class="fas fa-user-chart"></i> Personal Contributions</h3>
+                        <canvas id="personalChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="recent-activity">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                        </div>
+                        <div class="card-body" id="recent-activity-list">
+                            <div class="activity-item">
+                                <div class="activity-icon green">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <p>No recent activity</p>
+                                    <span class="activity-time">Start by adding your savings!</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Savings Page -->
+            <div id="savings-page" class="page">
+                <div class="page-header">
+                    <h1><i class="fas fa-piggy-bank"></i> Savings Management</h1>
+                    <div class="header-actions">
+                        <button class="btn-primary" onclick="showAddSavingsModal()">
+                            <i class="fas fa-plus"></i> Add Savings
+                        </button>
+                    </div>
+                </div>
+
+                <div class="savings-summary">
+                    <div class="summary-card">
+                        <h3>Monthly Contribution</h3>
+                        <p class="summary-amount" id="monthly-contribution">UGX 0</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Total Saved</h3>
+                        <p class="summary-amount" id="total-saved">UGX 0</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Savings Goal</h3>
+                        <p class="summary-amount" id="savings-goal">UGX 10,000,000</p>
+                    </div>
+                </div>
+
+                <div class="savings-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Amount (UGX)</th>
+                                <th>Date</th>
+                                <th>Month</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="savings-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Family Info Page -->
+            <div id="family-page" class="page">
+                <div class="page-header">
+                    <h1><i class="fas fa-users"></i> Family Information</h1>
+                    <div class="header-actions">
+                        <button class="btn-primary" onclick="showAddFamilyMemberModal()">
+                            <i class="fas fa-user-plus"></i> Add Member
+                        </button>
+                    </div>
+                </div>
+
+                <div class="family-grid" id="family-grid">
+                </div>
+            </div>
+
+            <!-- Profile Page -->
+            <div id="profile-page" class="page">
+                <div class="page-header">
+                    <h1><i class="fas fa-user"></i> My Profile</h1>
+                </div>
+
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="profile-info">
+                            <h2 id="profile-name">Your Name</h2>
+                            <p id="profile-username">@username</p>
+                            <span id="profile-role" class="role-badge">User</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-form-container">
+                        <form id="profile-form" class="profile-form">
+                            <div class="form-group" style="text-align: center;">
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <img id="profile-image-preview" src="" alt="Profile" class="preview-image" style="display: none;">
+                                    <div class="file-upload" style="max-width: 300px;">
+                                        <input type="file" id="profile-image" accept="image/*" onchange="previewProfileImage()">
+                                        <label for="profile-image" class="file-upload-label">
+                                            <i class="fas fa-camera"></i>
+                                            <span>Click to upload photo</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Full Name</label>
+                                    <input type="text" id="profile-fullname" name="fullname">
+                                </div>
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" id="profile-email" name="email">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Date of Birth</label>
+                                    <input type="date" id="profile-dob" name="dob">
+                                </div>
+                                <div class="form-group">
+                                    <label>Gender</label>
+                                    <select id="profile-gender" name="gender">
+                                        <option value="">Select</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Blood Group</label>
+                                    <select id="profile-bloodgroup" name="bloodgroup">
+                                        <option value="">Select</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Relationship</label>
+                                    <select id="profile-relationship" name="relationship">
+                                        <option value="">Select</option>
+                                        <option value="Father">Father</option>
+                                        <option value="Mother">Mother</option>
+                                        <option value="Son">Son</option>
+                                        <option value="Daughter">Daughter</option>
+                                        <option value="Brother">Brother</option>
+                                        <option value="Sister">Sister</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Allergies</label>
+                                <textarea id="profile-allergies" name="allergies" rows="2" placeholder="List any allergies..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Medical Conditions</label>
+                                <textarea id="profile-medical" name="medical" rows="2" placeholder="List any medical conditions..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Biography</label>
+                                <textarea id="profile-bio" name="bio" rows="4" placeholder="Tell us about yourself..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Occupation</label>
+                                <input type="text" id="profile-occupation" name="occupation" placeholder="Your profession">
+                            </div>
+                            <div class="form-group">
+                                <label>Employer</label>
+                                <input type="text" id="profile-employer" name="employer" placeholder="Where do you work?">
+                            </div>
+                            <div class="form-group">
+                                <label>Emergency Contact</label>
+                                <input type="text" id="profile-emergency" name="emergency" placeholder="Emergency contact number">
+                            </div>
+                            <div class="form-group">
+                                <label>Address</label>
+                                <textarea id="profile-address" name="address" rows="2" placeholder="Your address"></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-save"></i> Save Profile
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Page -->
+            <div id="admin-page" class="page">
+                <div class="page-header">
+                    <h1><i class="fas fa-cogs"></i> Admin Panel</h1>
+                </div>
+
+                <div class="admin-tabs">
+                    <button class="admin-tab active" data-tab="users">
+                        <i class="fas fa-users"></i> User Management
+                    </button>
+                    <button class="admin-tab" data-tab="settings">
+                        <i class="fas fa-sliders-h"></i> Settings
+                    </button>
+                    <button class="admin-tab" data-tab="contributions">
+                        <i class="fas fa-hand-holding-usd"></i> Expected Contributions
+                    </button>
+                </div>
+
+                <div id="users-tab" class="admin-content active">
+                    <div class="users-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="settings-tab" class="admin-content">
+                    <div class="settings-card">
+                        <h3><i class="fas fa-bullseye"></i> Savings Goal</h3>
+                        <div class="form-group">
+                            <label>Target Amount (UGX)</label>
+                            <input type="number" id="settings-goal" value="10000000">
+                        </div>
+                        <button class="btn-primary" onclick="saveSettings()">
+                            <i class="fas fa-save"></i> Save Settings
+                        </button>
+                    </div>
+                </div>
+
+                <div id="contributions-tab" class="admin-content">
+                    <div class="settings-card">
+                        <h3><i class="fas fa-hand-holding-usd"></i> Monthly Expected Contributions</h3>
+                        <p style="margin-bottom: 20px; color: var(--gray-color);">Set the expected monthly contribution for each family member</p>
+                        <div id="contributions-list">
+                        </div>
+                        <button class="btn-primary" onclick="saveContributions()" style="margin-top: 20px;">
+                            <i class="fas fa-save"></i> Save Contributions
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Debits Page -->
+            <div id="debits-page" class="page">
+                <div class="page-header">
+                    <h1><i class="fas fa-money-bill-wave"></i> Debits / Withdrawals</h1>
+                    <div class="header-actions">
+                        <button class="btn-primary" onclick="showAddDebitModal()">
+                            <i class="fas fa-minus-circle"></i> Record Withdrawal
+                        </button>
+                    </div>
+                </div>
+
+                <div class="savings-summary">
+                    <div class="summary-card">
+                        <h3>Total Withdrawals</h3>
+                        <p class="summary-amount" id="total-debits">UGX 0</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Pending Repayments</h3>
+                        <p class="summary-amount" id="pending-repayments">UGX 0</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Repaid Amount</h3>
+                        <p class="summary-amount" id="repaid-amount">UGX 0</p>
+                    </div>
+                </div>
+
+                <div class="savings-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Amount (UGX)</th>
+                                <th>Date Taken</th>
+                                <th>Reason</th>
+                                <th>Expected Repayment</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="debits-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add Savings Modal -->
+    <div id="savings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-piggy-bank"></i> Add Savings</h2>
+                <button class="modal-close" onclick="closeModal('savings-modal')">&times;</button>
+            </div>
+            <form id="savings-form">
+                <div class="form-group">
+                    <label>Member</label>
+                    <select id="savings-member" required>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Amount (UGX)</label>
+                    <input type="number" id="savings-amount" required min="0" placeholder="Enter amount">
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="savings-date" required>
+                </div>
+                <div class="form-group">
+                    </label>
+                    <label>Notes<textarea id="savings-notes" rows="2" placeholder="Optional notes"></textarea>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Family Member Modal -->
+    <div id="family-modal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus"></i> Add Family Member</h2>
+                <button class="modal-close" onclick="closeModal('family-modal')">&times;</button>
+            </div>
+            <form id="family-form">
+                <div class="form-group" style="text-align: center;">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <img id="family-image-preview" src="" alt="Profile" class="preview-image" style="display: none;">
+                        <div class="file-upload" style="max-width: 300px;">
+                            <input type="file" id="family-image" accept="image/*" onchange="previewFamilyImage()">
+                            <label for="family-image" class="file-upload-label">
+                                <i class="fas fa-camera"></i>
+                                <span>Click to upload photo</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="family-fullname" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Relationship *</label>
+                        <select id="family-relationship" required>
+                            <option value="">Select</option>
+                            <option value="Father">Father</option>
+                            <option value="Mother">Mother</option>
+                            <option value="Son">Son</option>
+                            <option value="Daughter">Daughter</option>
+                            <option value="Brother">Brother</option>
+                            <option value="Sister">Sister</option>
+                            <option value="Grandfather">Grandfather</option>
+                            <option value="Grandmother">Grandmother</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date of Birth</label>
+                        <input type="date" id="family-dob">
+                    </div>
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <select id="family-gender">
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Blood Group</label>
+                        <select id="family-bloodgroup">
+                            <option value="">Select</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Occupation</label>
+                        <input type="text" id="family-occupation" placeholder="Profession">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Allergies</label>
+                    <textarea id="family-allergies" rows="2" placeholder="List any allergies"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Medical Conditions</label>
+                    <textarea id="family-medical" rows="2" placeholder="List any medical conditions"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Biography</label>
+                    <textarea id="family-bio" rows="3" placeholder="Personal biography"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea id="family-address" rows="2" placeholder="Address"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Emergency Contact</label>
+                    <input type="text" id="family-emergency" placeholder="Emergency contact number">
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i> Save Member
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="edit-user-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> Edit User</h2>
+                <button class="modal-close" onclick="closeModal('edit-user-modal')">&times;</button>
+            </div>
+            <form id="edit-user-form">
+                <input type="hidden" id="edit-user-id">
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="edit-user-role" required>
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="edit-user-status" required>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Member Modal -->
+    <div id="view-member-modal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2><i class="fas fa-user"></i> Member Details</h2>
+                <button class="modal-close" onclick="closeModal('view-member-modal')">&times;</button>
+            </div>
+            <div id="member-details" class="member-details">
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Debit Modal -->
+    <div id="debit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-money-bill-wave"></i> Record Withdrawal</h2>
+                <button class="modal-close" onclick="closeModal('debit-modal')">&times;</button>
+            </div>
+            <form id="debit-form">
+                <div class="form-group">
+                    <label>Member *</label>
+                    <select id="debit-member" required>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Amount (UGX) *</label>
+                    <input type="number" id="debit-amount" required min="0" placeholder="Enter amount">
+                </div>
+                <div class="form-group">
+                    <label>Date Taken *</label>
+                    <input type="date" id="debit-date" required>
+                </div>
+                <div class="form-group">
+                    <label>Reason *</label>
+                    <textarea id="debit-reason" rows="2" required placeholder="Reason for withdrawal"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Expected Repayment Date</label>
+                    <input type="date" id="debit-repayment-date">
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i> Save Withdrawal
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
