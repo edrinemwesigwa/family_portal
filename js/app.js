@@ -494,6 +494,11 @@ function togglePassword() {
     }
 }
 
+function toggleMobileMenu() {
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.classList.toggle('active');
+}
+
 function navigateTo(page) {
     // Update nav items
     document.querySelectorAll('.nav-item').forEach(item => {
